@@ -1,0 +1,2 @@
+#ignora todos los ejecutables resultado de una compilación:
+*.out
