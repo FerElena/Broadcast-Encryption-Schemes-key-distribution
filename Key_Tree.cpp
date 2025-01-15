@@ -62,7 +62,6 @@ Keytree::Keytree(size_t Tree_Depth, size_t node_key_length) {
     for (int i = 0; i < this->FCB_tree.size(); i++) {
         FCB_tree[i] = new uint8_t[node_key_length / 8];
         Fill_With_Random(FCB_tree[i], node_key_length / 8); // Assign a random value to the key using a cryptographic PRNG
-        allowed_keys.push_back(true); // Mark key as allowed to be used at creation
     }
 }
 

@@ -1,3 +1,6 @@
+// compilar el código con g++ y la opción -maes para indicar al compilador que utilize las intrucciones de INTEL y AMD de AES
+// g++ BES_CSM.cpp testing_main.cpp Key_Tree.cpp  DRBG_AES.cpp BES_SDM.cpp -g -maes
+
 #include "Key_Tree.hpp"
 #include "BES_CSM.hpp"
 

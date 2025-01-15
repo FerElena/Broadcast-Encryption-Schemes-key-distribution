@@ -66,7 +66,6 @@ protected:
     size_t depth; ///< The total depth of the complete binary tree.
     vector<bool> allowed_users; ///< Vector representing the users allowed or denied access to the communications.
     vector<uint8_t*> FCB_tree; ///< The complete binary tree represented as a vector where each element is the key of the node.
-    vector<bool> allowed_keys; ///< Vector representing the current keys that can be used or are not denied.
     size_t Key_length; ///< Length of the keys in the nodes of the complete binary tree.
 
 public:

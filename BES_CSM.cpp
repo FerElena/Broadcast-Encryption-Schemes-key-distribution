@@ -1,8 +1,11 @@
 #include "BES_CSM.hpp"
 
 // Constructor for the BES_CSM_scheme class
-BES_CSM_scheme::BES_CSM_scheme(size_t Tree_Depth, size_t node_key_length) 
-    : Keytree(Tree_Depth, node_key_length) {}
+BES_CSM_scheme::BES_CSM_scheme(size_t Tree_Depth, size_t node_key_length) : Keytree(Tree_Depth, node_key_length){
+	for(int i = 0 ; i < FCB_tree.size() ; i++){	
+        allowed_keys.push_back(true); // Mark key as allowed to be used at creation
+	}
+}
 
 // Method to deny access to a user by their user ID
 int BES_CSM_scheme::denegate_user(unsigned int userID) {
@@ -65,7 +68,7 @@ void BES_CSM_scheme::find_allowed_keys(vector<unsigned int>& node_key_ID, vector
     }
 }
 
-// Method to get all the allowed keys for the user
+// Method to get all the allowed keys for the allowed users
 void BES_CSM_scheme::get_allowed_keys(vector<unsigned int>& node_key_ID, vector<uint8_t*>& user_keys) {
     find_allowed_keys(node_key_ID, user_keys, 0); // Call the recursive function from the root
 }

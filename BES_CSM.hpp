@@ -5,10 +5,12 @@
 
 /**
  * @class BES_CSM_scheme
- * @brief Class representing a Complete Subtree Difference Broadcast Encryption Scheme (BES) which inherits from Keytree.
+ * @brief Class representing a Complete Subtree Broadcast Encryption Scheme (BES)(stateless) which inherits from Keytree.
  */
 class BES_CSM_scheme : public Keytree {
-private:
+private:	
+    vector<bool> allowed_keys; ///< Vector representing the current keys that can be used or are not denied.
+
     /**
      * @brief Auxiliary method to find the current allowed keys in the tree starting from a given index.
      * 
