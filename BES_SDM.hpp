@@ -5,6 +5,15 @@
 #include "DRBG_AES.hpp"
 
 /**
+ *@brief struct representing a subset group in the SDM scheme
+ *
+*/
+typedef struct key_subset{
+	unsigned int high_node;
+	unsigned int low_node;
+}Key_subset;
+
+/**
  * @class BES_sdM_scheme
  * @brief Class representing a Subset Difference Broadcast Encryption Scheme (BES) which inherits from Keytree.
  */
@@ -15,6 +24,18 @@ private:
      * 
      */
     void find_allowed_keys(vector<unsigned int>& node_key_ID, vector<uint8_t*>& user_keys, unsigned int index);
+
+	/**
+	 *@brief find the path in the tree between a leaf and a subtree root node
+	 *
+	*/
+	int find_path(unsigned int leaf_node_index, unsigned int root_node_index , vector<unsigned int>& path); 
+
+	/**
+	 *@brief calculates the correspondent key for a subset of the SDM BES
+	 *
+	*/
+	int calculate_subset_key(unsigned int i,unsigned int j , uint8_t *key);
 
 public:
     /**
@@ -42,7 +63,7 @@ public:
      * @brief Get the corresponding keys for a determined user.
      * 
      */
-    int get_user_keys();
+    int get_user_keys(unsigned int userID, vector<Key_subset>& user_keys_id, vector<uint8_t*>& user_keys);
 
     /**
      * @brief Get the allowed keys that can be used at the moment with the currently allowed users.
