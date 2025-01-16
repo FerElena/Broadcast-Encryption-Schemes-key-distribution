@@ -12,7 +12,7 @@
 #endif
 
 #ifndef AES_STREAM_ROUNDS
-# define AES_STREAM_ROUNDS 10
+# define AES_STREAM_ROUNDS 14
 #endif
 
 typedef struct CRYPTO_ALIGN(16) aes_stream_state {

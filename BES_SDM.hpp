@@ -14,7 +14,7 @@ typedef struct key_subset{
 }Key_subset;
 
 /**
- * @class BES_sdM_scheme
+ * @class BES_SDM_scheme
  * @brief Class representing a Subset Difference Broadcast Encryption Scheme (BES) which inherits from Keytree.
  */
 class BES_SDM_scheme : public Keytree {
@@ -36,6 +36,12 @@ private:
 	 *
 	*/
 	int calculate_subset_key(unsigned int i,unsigned int j , uint8_t *key);
+
+	/**
+	 *@brief triples the size of a key with a DRBG based on AES256-CTR
+	 *
+	*/
+	void drbg_triplesize(uint8_t *key_in,size_t key_size, uint8_t *triple_out);
 
 public:
     /**
