@@ -9,7 +9,11 @@
  */
 class BES_CSM_scheme : public Keytree {
 private:	
-    vector<bool> allowed_keys; ///< Vector representing the current keys that can be used or are not denied.
+	/**
+	 * @brief Vector representing the current keys that can be used or are not denied.
+	 *
+	*/
+    vector<bool> allowed_keys;
 
     /**
      * @brief Auxiliary method to find the current allowed keys in the tree starting from a given index.

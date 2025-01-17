@@ -13,6 +13,15 @@ typedef struct key_subset{
 	unsigned int low_node;
 }Key_subset;
 
+
+/**
+ *@brief params used by get_allowed_keys to diferentiate between nodes
+ *
+*/
+const char O_node = 0; // Operative user
+const char D_node = 1; // Denied user
+const char S_node = 2; // Semi operative node
+
 /**
  * @class BES_SDM_scheme
  * @brief Class representing a Subset Difference Broadcast Encryption Scheme (BES) which inherits from Keytree.
@@ -42,6 +51,12 @@ private:
 	 *
 	*/
 	void drbg_triplesize(uint8_t *key_in,size_t key_size, uint8_t *triple_out);
+
+	/**
+	 *@brief given a subtree root node of an already created subtree created by get_allowed_key, finds the corresponding subset
+	 *
+	*/
+	Key_subset find_subset_and_key(int subtree_root_node, vector <char> node_tree,uint8_t *key);
 
 public:
     /**
@@ -75,7 +90,7 @@ public:
      * @brief Get the allowed keys that can be used at the moment with the currently allowed users.
      * 
      */
-    void get_allowed_keys();
+    void get_allowed_keys(vector<Key_subset>& user_keys_id, vector<uint8_t*>& user_keys);
 };
 
 #endif

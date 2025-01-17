@@ -43,17 +43,27 @@ int main(){
 	BES_SDM_scheme BES_SDM_Tree(3 , 256);
 
 	BES_SDM_Tree.denegate_user(0);
-	BES_SDM_Tree.denegate_user(1);
+	BES_SDM_Tree.denegate_user(2);
 	BES_SDM_Tree.denegate_user(4);
-	BES_SDM_Tree.denegate_user(7);
+
 
 	BES_SDM_Tree.print_KeyTree_info();
 	
 	vector <Key_subset> key_indexes;
 	BES_SDM_Tree.get_user_keys(2,key_indexes,user_keys);
 	
-	cout << "el usuario tiene acceso a las claves:" << endl;
+	cout << "el usuario tiene acceso a los labels:" << endl;
 
+	for(int i = 0 ; i < key_indexes.size() ; i++){
+		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
+		printHex(user_keys[i],32);
+	}
+
+	key_indexes.clear();
+	user_keys.clear();
+	BES_SDM_Tree.get_allowed_keys(key_indexes,user_keys);
+
+	cout << "las claves que van a ser utilizadas son:" << endl;
 	for(int i = 0 ; i < key_indexes.size() ; i++){
 		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
 		printHex(user_keys[i],32);
