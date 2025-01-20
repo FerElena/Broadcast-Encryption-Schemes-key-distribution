@@ -40,11 +40,12 @@ int main(){
 	}
 
 	user_keys.clear();
-	BES_SDM_scheme BES_SDM_Tree(3 , 256);
+	BES_SDM_scheme BES_SDM_Tree(4 , 256);
 
 	BES_SDM_Tree.denegate_user(0);
 	BES_SDM_Tree.denegate_user(2);
 	BES_SDM_Tree.denegate_user(4);
+	BES_SDM_Tree.denegate_user(8);
 
 
 	BES_SDM_Tree.print_KeyTree_info();

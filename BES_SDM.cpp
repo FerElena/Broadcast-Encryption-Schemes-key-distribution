@@ -1,25 +1,8 @@
 #include "BES_SDM.hpp"
 
-// Constructor for the BES_SDM_scheme class
-BES_SDM_scheme::BES_SDM_scheme(size_t Tree_Depth, size_t node_key_length)
-    : Keytree(Tree_Depth, node_key_length) {}
 
-// Method to deny access to a user by their user ID
-int BES_SDM_scheme::denegate_user(unsigned int userID)
-{
-    if (userID >= allowed_users.size())
-    {
-        throw invalid_argument("Invalid User Index"); // Throws an exception if the user ID is invalid
-        return -1;
-    }
-    else
-    {
-        // Calculate the node key index for the user ID
-        int key_index = userID + allowed_users.size() - 1;
-        allowed_users[userID] = false; // Deny access to the user
-        return 1;
-    }
-}
+
+////////////////////////////////////// PRIVATE METHODS ////////////////////////////////////////////////
 
 // finds the path between a leaf and a node
 int BES_SDM_scheme::find_path(unsigned int leaf_node_index, unsigned int root_node_index, vector<unsigned int> &path)
@@ -46,6 +29,75 @@ void BES_SDM_scheme::drbg_triplesize(uint8_t *key_in, size_t key_size, uint8_t *
     aes_stream_state drbg_context;                         // context for the deterministic random byte generator used for key derivation
     aes_stream_init(&drbg_context, key_in);                // initializates the DRBG with the input key
     aes_stream(&drbg_context, triple_out, (key_size) * 3); // triples de output with the DRBG
+}
+
+Key_subset BES_SDM_scheme::find_subset_and_key(int subtree_root_node, std::vector<char> node_tree, uint8_t *key)
+{
+    uint8_t drbg_output[32 * 3]; // data buffer to triple the output of the DRBG
+    uint8_t iterator_key[32];    // data buffer to iterate the key tree
+    int current_index = subtree_root_node;
+    unsigned int key_length_bytes = Key_length / 8;
+    Key_subset KS_to_return;
+
+    memcpy(iterator_key, FCB_tree[current_index], key_length_bytes); // copy the subtree root node key
+    while (node_tree[current_index] != D_node)
+    {
+        if (node_tree[get_leftchild_index(current_index)] == S_node)
+        { // if the S node is on the left, iterate in the tree to the left
+            drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
+            memcpy(iterator_key, drbg_output, key_length_bytes);
+            current_index = get_leftchild_index(current_index);
+        }
+        else if (node_tree[get_rightchild_index(current_index)] == S_node)
+        { // if the S node is on the right, iterate in the tree to the right
+            drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
+            memcpy(iterator_key, drbg_output + (key_length_bytes * 2), key_length_bytes);
+            current_index = get_rightchild_index(current_index);
+        }
+        else
+        {
+            if (node_tree[get_leftchild_index(current_index)] == D_node)
+            {
+                drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
+                memcpy(iterator_key, drbg_output, key_length_bytes);
+                current_index = get_leftchild_index(current_index);
+            }
+            else if (node_tree[get_rightchild_index(current_index)] == D_node)
+            {
+                drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
+                memcpy(iterator_key, drbg_output + (key_length_bytes * 2), key_length_bytes);
+                current_index = get_rightchild_index(current_index);
+            }
+        }
+    }
+    KS_to_return.high_node = subtree_root_node;
+    KS_to_return.low_node = current_index;
+    drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
+    memcpy(key, drbg_output + key_length_bytes, key_length_bytes); // key supposed to be allocated from the outside
+    return KS_to_return;                                           // everything ok, key also calculated
+}
+
+////////////////////////////////////// PUBLIC METHODS ////////////////////////////////////////////////
+
+// Constructor for the BES_SDM_scheme class
+BES_SDM_scheme::BES_SDM_scheme(size_t Tree_Depth, size_t node_key_length)
+    : Keytree(Tree_Depth, node_key_length) {}
+
+// Method to deny access to a user by their user ID
+int BES_SDM_scheme::denegate_user(unsigned int userID)
+{
+    if (userID >= allowed_users.size())
+    {
+        throw invalid_argument("Invalid User Index"); // Throws an exception if the user ID is invalid
+        return -1;
+    }
+    else
+    {
+        // Calculate the node key index for the user ID
+        int key_index = userID + allowed_users.size() - 1;
+        allowed_users[userID] = false; // Deny access to the user
+        return 1;
+    }
 }
 
 // Method to get the keys for a specific user
@@ -96,52 +148,6 @@ int BES_SDM_scheme::get_user_keys(unsigned int userID, vector<Key_subset> &user_
         path.clear();                                                  // reset the path to calculate the new path
     }
     return 1;
-}
-
-Key_subset BES_SDM_scheme::find_subset_and_key(int subtree_root_node, std::vector<char> node_tree, uint8_t *key)
-{
-    uint8_t drbg_output[32 * 3]; // data buffer to triple the output of the DRBG
-    uint8_t iterator_key[32];    // data buffer to iterate the key tree
-    int current_index = subtree_root_node;
-    unsigned int key_length_bytes = Key_length / 8;
-    Key_subset KS_to_return;
-
-    memcpy(iterator_key, FCB_tree[current_index], key_length_bytes); // copy the subtree root node key
-    while (node_tree[current_index] != D_node)
-    {
-        if (node_tree[get_leftchild_index(current_index)] == S_node)
-        { // if the S node is on the left, iterate in the tree to the left
-            drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
-            memcpy(iterator_key, drbg_output, key_length_bytes);
-            current_index = get_leftchild_index(current_index);
-        }
-        else if (node_tree[get_rightchild_index(current_index)] == S_node)
-        { // if the S node is on the right, iterate in the tree to the right
-            drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
-            memcpy(iterator_key, drbg_output + (key_length_bytes * 2), key_length_bytes);
-            current_index = get_rightchild_index(current_index);
-        }
-        else
-        {
-            if (node_tree[get_leftchild_index(current_index)] == D_node)
-            {
-                drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
-                memcpy(iterator_key, drbg_output, key_length_bytes);
-                current_index = get_leftchild_index(current_index);
-            }
-            else if (node_tree[get_rightchild_index(current_index)] == D_node)
-            {
-                drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
-                memcpy(iterator_key, drbg_output + (key_length_bytes * 2), key_length_bytes);
-                current_index = get_rightchild_index(current_index);
-            }
-        }
-    }
-    KS_to_return.high_node = subtree_root_node;
-    KS_to_return.low_node = current_index;
-    drbg_triplesize(iterator_key, key_length_bytes, drbg_output);
-    memcpy(key, drbg_output + key_length_bytes, key_length_bytes); // key supposed to be allocated from the outside
-    return KS_to_return;                                           // everything ok, key also calculated
 }
 
 void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std::vector<uint8_t *> &user_keys)
@@ -251,3 +257,5 @@ void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std
         }
     }
 }
+
+

@@ -1,5 +1,27 @@
 #include "BES_CSM.hpp"
 
+////////////////////////////////////// PRIVATE METHODS ////////////////////////////////////////////////
+
+// Recursive method to find the allowed keys from a given index
+void BES_CSM_scheme::find_allowed_keys(vector<unsigned int>& node_key_ID, vector<uint8_t*>& user_keys, unsigned int index) {
+    if (index >= FCB_tree.size()) {
+        return; // Stop recursion if the index exceeds the size of the tree
+    }
+    if (allowed_keys[index] == true) {
+        uint8_t *newKey = new uint8_t[Key_length / 8];
+        memcpy(newKey, FCB_tree[index], Key_length / 8);
+        node_key_ID.push_back(index);
+        user_keys.push_back(newKey);
+    } else {
+        // Recursively call on the left and right children
+        find_allowed_keys(node_key_ID, user_keys, get_leftchild_index(index));
+        find_allowed_keys(node_key_ID, user_keys, get_rightchild_index(index));
+    }
+}
+
+
+////////////////////////////////////// PUBLIC METHODS ////////////////////////////////////////////////
+
 // Constructor for the BES_CSM_scheme class
 BES_CSM_scheme::BES_CSM_scheme(size_t Tree_Depth, size_t node_key_length) : Keytree(Tree_Depth, node_key_length){
 	for(int i = 0 ; i < FCB_tree.size() ; i++){	
@@ -49,23 +71,6 @@ int BES_CSM_scheme::get_user_keys(unsigned int userID, vector<unsigned int>& use
         key_index = get_father_index(key_index);
     }
     return 1;
-}
-
-// Recursive method to find the allowed keys from a given index
-void BES_CSM_scheme::find_allowed_keys(vector<unsigned int>& node_key_ID, vector<uint8_t*>& user_keys, unsigned int index) {
-    if (index >= FCB_tree.size()) {
-        return; // Stop recursion if the index exceeds the size of the tree
-    }
-    if (allowed_keys[index] == true) {
-        uint8_t *newKey = new uint8_t[Key_length / 8];
-        memcpy(newKey, FCB_tree[index], Key_length / 8);
-        node_key_ID.push_back(index);
-        user_keys.push_back(newKey);
-    } else {
-        // Recursively call on the left and right children
-        find_allowed_keys(node_key_ID, user_keys, get_leftchild_index(index));
-        find_allowed_keys(node_key_ID, user_keys, get_rightchild_index(index));
-    }
 }
 
 // Method to get all the allowed keys for the allowed users
