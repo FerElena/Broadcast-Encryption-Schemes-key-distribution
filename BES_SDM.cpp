@@ -232,3 +232,94 @@ void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std
         }
     }
 }
+
+ostream& operator << (ostream& os, const BES_SDM_scheme& obj) {
+    unsigned char scheme_name[scheme_name_size] = "SDM_BES_scheme";
+
+    os.write(reinterpret_cast<const char*>(scheme_name), scheme_name_size); // write the scheme name
+
+    os.write(reinterpret_cast<const char*>(&obj.depth), sizeof(obj.depth)); // write the depth of the tree
+
+    os.write(reinterpret_cast<const char*>(&obj.Key_length), sizeof(obj.Key_length)); // write the Key_length of the tree
+
+    size_t allowed_users_size = obj.allowed_users.size();
+    os.write(reinterpret_cast<const char*>(&allowed_users_size), sizeof(size_t)); // write the allowed users vector size
+
+    // logic to translate the bool vector array to normal bytes
+    uint8_t byte = 0;
+    size_t bit_index = 0;
+
+    for (size_t i = 0; i < allowed_users_size; ++i) {
+        if (obj.allowed_users[i]) { // if user is allowed put the bit to 1
+            byte |= (1 << (7 - bit_index));
+        }
+        ++bit_index;
+        if (bit_index == 8) {
+            os.write(reinterpret_cast<const char*>(&byte), sizeof(byte));
+            byte = 0;
+            bit_index = 0;
+        }
+    }
+    // Write any remaining bits (if the size is not a multiple of 8)
+    if (bit_index != 0) {
+        os.write(reinterpret_cast<const char*>(&byte), sizeof(byte));
+    }
+
+    // write all the keys
+    for (int i = 0; i < obj.FCB_tree.size(); i++) {
+        os.write(reinterpret_cast<const char*>(obj.FCB_tree[i]), obj.Key_length / 8);
+    }
+    return os;
+}
+
+istream& operator >> (istream& is, BES_SDM_scheme& obj) {
+    unsigned char scheme_name[scheme_name_size];
+
+    is.read(reinterpret_cast<char*>(scheme_name), scheme_name_size); // read the scheme name
+
+    // verify scheme name
+    if (strncmp(reinterpret_cast<const char*>(scheme_name), "SDM_BES_scheme", scheme_name_size) != 0) {
+        cerr << "Error: Nombre del esquema incorrecto." << std::endl;
+        return is;
+    }
+
+    is.read(reinterpret_cast<char*>(&obj.depth), sizeof(obj.depth)); // read the depth of the tree
+
+    is.read(reinterpret_cast<char*>(&obj.Key_length), sizeof(obj.Key_length)); // read the Key_length of the tree
+
+    size_t allowed_users_size;
+    is.read(reinterpret_cast<char*>(&allowed_users_size), sizeof(size_t)); // read the allowed users vector size
+    obj.allowed_users.resize(allowed_users_size);
+
+    // read allowed users vector
+    uint8_t byte = 0;
+    size_t bit_index = 0;
+
+    for (size_t i = 0; i < allowed_users_size; ++i) {
+        if (bit_index == 0) {
+            // read next byte
+            is.read(reinterpret_cast<char*>(&byte), sizeof(byte));
+        }
+
+        obj.allowed_users[i] = (byte & (1 << (7 - bit_index))) != 0; // if bit is 1 write true, else write false
+        ++bit_index;
+
+        if (bit_index == 8) {
+            bit_index = 0;
+        }
+    }
+
+    // free any old keys in the tree
+    for (int i = 0; i < obj.FCB_tree.size(); i++) {
+        delete obj.FCB_tree[i];
+    }
+    // read all keys of the SDM_tree
+    obj.FCB_tree.resize(pow(2, obj.depth + 1) - 1);
+    for (int i = 0; i < obj.FCB_tree.size(); i++) {
+        obj.FCB_tree[i] = new uint8_t[obj.Key_length / 8];
+        is.read(reinterpret_cast<char*>(obj.FCB_tree[i]), obj.Key_length / 8);
+    }
+
+    return is;
+}
+

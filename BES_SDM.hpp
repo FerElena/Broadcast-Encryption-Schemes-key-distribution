@@ -76,6 +76,16 @@ public:
      */
     ~BES_SDM_scheme() = default;
 
+    /**
+     * @brief overwrite output stream operator, so we can write the CSM_tree to a file
+     */
+    friend ostream& operator << ( ostream& os, const BES_SDM_scheme& obj);
+
+    /**
+     * @brief overwrite input stream operator, so we can read the CSM_tree to a file
+     */
+    friend istream& operator >> ( istream& is, BES_SDM_scheme& obj);
+
     /*!
      * @brief Denies access to a user by their user ID.
      *
