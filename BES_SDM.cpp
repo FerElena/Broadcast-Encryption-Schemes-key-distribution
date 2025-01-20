@@ -217,8 +217,8 @@ void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std
         { // base case
             if (node_tree[0] == S_node)
             {
-                unsigned char root_left_node = get_leftchild_index(iteration);
-                unsigned char root_right_node = get_rightchild_index(iteration);
+                unsigned char root_left_node = node_tree[get_leftchild_index(iteration)];
+                unsigned char root_right_node = node_tree[get_rightchild_index(iteration)];
                 if ((root_left_node == S_node && root_right_node == O_node) || (root_left_node == O_node && root_right_node == S_node) || (root_left_node == D_node && root_right_node == O_node) || (root_left_node == O_node && root_right_node == D_node))
                 {
                     // find last subset
