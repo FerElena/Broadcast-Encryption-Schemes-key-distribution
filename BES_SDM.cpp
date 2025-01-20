@@ -150,20 +150,20 @@ int BES_SDM_scheme::get_user_keys(unsigned int userID, vector<Key_subset> &user_
 
 void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std::vector<uint8_t *> &user_keys)
 {
-    unsigned int number_of_nodes = FCB_tree.size();
-    std::vector<char> node_tree(number_of_nodes);
-    Key_subset aux_subset;
-    uint8_t *aux_key;
-    unsigned int key_length_bytes = Key_length / 8;
+    unsigned int number_of_nodes = FCB_tree.size();  // number of node in the complete binary tree
+    std::vector<char> node_tree(number_of_nodes);    // vector used as the Steiner Tree of FCB_tree for the cover finding algorithm
+    Key_subset aux_subset;                           // auxiliar key subset for output user_keys_id vector
+    uint8_t *aux_key;                                // ptr to allocate memory for keys
+    unsigned int key_length_bytes = Key_length / 8;  // length of the current tree keys in bytes
 
     for (int i = number_of_nodes / 2, j = 0; i < number_of_nodes; i++, j++)
     { // setup the initial vector representing the binary tree, and initialize leaf nodes
-        if (allowed_users[j])
+        if (allowed_users[j]) // if user is allowed to acces the system, setup his node as operative node
             node_tree[i] = O_node;
-        else
+        else                  // else setup node as denegated node
             node_tree[i] = D_node;
     }
-    for (int iteration = number_of_nodes / 4; iteration >= 0; iteration /= 2)
+    for (int iteration = number_of_nodes / 4; iteration >= 0; iteration /= 2) // for each tree level, excluding the one with the leafs
     {
 
         for (int index = iteration; index <= iteration * 2; index++)

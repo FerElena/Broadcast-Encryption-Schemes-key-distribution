@@ -1,3 +1,8 @@
+/**
+ * @file file implementating the Complete Subset Method for symetric BES as defined in https://eprint.iacr.org/2001/059.pdf
+ * 
+ */
+
 #ifndef BES_CSM_H
 #define BES_CSM_H
 

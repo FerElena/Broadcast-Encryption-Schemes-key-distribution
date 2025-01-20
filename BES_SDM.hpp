@@ -1,3 +1,7 @@
+/**
+ * @file file implementating the Subset Diference Method for symetric BES as defined in https://eprint.iacr.org/2001/059.pdf
+ * 
+ */
 #ifndef BES_SDM_H
 #define BES_SDM_H
 
@@ -82,7 +86,7 @@ public:
     int denegate_user(unsigned int userID);
 
     /*!
-     * @brief Gets the keys for a specific user.
+     * @brief Gets the key_labels for a specific user according to the SDM scheme.
      *
      * @param userID The ID of the user.
      * @param user_keys_id Vector to store the user's key subset IDs.
