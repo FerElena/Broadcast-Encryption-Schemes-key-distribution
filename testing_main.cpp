@@ -8,18 +8,18 @@
 using namespace std;
 
 int main(){
-	BES_CSM_scheme BES_CSM_Tree(3 ,256);
+	/*BES_CSM_scheme BES_SDM_Tree_1(3 ,256);
 
 	vector <unsigned int> user_keys_id;
 	vector <uint8_t*> user_keys;
-	BES_CSM_Tree.denegate_user(0);
-	BES_CSM_Tree.denegate_user(1);
-	BES_CSM_Tree.denegate_user(4);
-	BES_CSM_Tree.denegate_user(7);
+	BES_SDM_Tree_1.denegate_user(0);
+	BES_SDM_Tree_1.denegate_user(1);
+	BES_SDM_Tree_1.denegate_user(4);
+	BES_SDM_Tree_1.denegate_user(7);
 
 
-	BES_CSM_Tree.print_KeyTree_info();
-	BES_CSM_Tree.get_user_keys(2,user_keys_id,user_keys);
+	BES_SDM_Tree_1.print_KeyTree_info();
+	BES_SDM_Tree_1.get_user_keys(2,user_keys_id,user_keys);
 	
 	cout << "el usuario  tiene acceso a las siguientes claves:" << endl;
 	for(int i = 0 ; i < user_keys_id.size() ; i++){
@@ -30,7 +30,7 @@ int main(){
 	user_keys_id.clear();
 	user_keys.clear();
 
-	BES_CSM_Tree.get_allowed_keys(user_keys_id,user_keys);
+	BES_SDM_Tree_1.get_allowed_keys(user_keys_id,user_keys);
 	cout << "las claves que van a ser utilizadas son: " << endl;
 	cout << "el tamaño de el vector de claves es: " << user_keys_id.size() << endl;
 
@@ -40,18 +40,18 @@ int main(){
 	}
 
 	user_keys.clear();
-	BES_SDM_scheme BES_SDM_Tree(4 , 256);
+	BES_SDM_scheme BES_SDM_Tree_1(4 , 256);
 
-	BES_SDM_Tree.denegate_user(0);
-	BES_SDM_Tree.denegate_user(2);
-	BES_SDM_Tree.denegate_user(4);
-	BES_SDM_Tree.denegate_user(8);
+	BES_SDM_Tree_1.denegate_user(0);
+	BES_SDM_Tree_1.denegate_user(2);
+	BES_SDM_Tree_1.denegate_user(4);
+	BES_SDM_Tree_1.denegate_user(8);
 
 
-	BES_SDM_Tree.print_KeyTree_info();
+	BES_SDM_Tree_1.print_KeyTree_info();
 	
 	vector <Key_subset> key_indexes;
-	BES_SDM_Tree.get_user_keys(2,key_indexes,user_keys);
+	BES_SDM_Tree_1.get_user_keys(2,key_indexes,user_keys);
 	
 	cout << "el usuario tiene acceso a los labels:" << endl;
 
@@ -62,7 +62,33 @@ int main(){
 
 	key_indexes.clear();
 	user_keys.clear();
-	BES_SDM_Tree.get_allowed_keys(key_indexes,user_keys);
+	BES_SDM_Tree_1.get_allowed_keys(key_indexes,user_keys);
+
+	cout << "las claves que van a ser utilizadas son:" << endl;
+	for(int i = 0 ; i < key_indexes.size() ; i++){
+		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
+		printHex(user_keys[i],32);
+	}
+	*/
+	vector <uint8_t*> user_keys;
+	vector <key_subset> key_indexes;
+
+	BES_SDM_scheme BES_SDM_Tree_1(3, 256);
+    BES_SDM_Tree_1.denegate_user(1);
+
+    BES_SDM_Tree_1.print_KeyTree_info();
+
+	BES_SDM_Tree_1.get_user_keys(0,key_indexes,user_keys);
+	
+	cout << "el usuario tiene acceso a los labels:" << endl;
+
+	for(int i = 0 ; i < key_indexes.size() ; i++){
+		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
+		printHex(user_keys[i],32);
+	}
+	key_indexes.clear();
+	user_keys.clear();
+	BES_SDM_Tree_1.get_allowed_keys(key_indexes,user_keys);
 
 	cout << "las claves que van a ser utilizadas son:" << endl;
 	for(int i = 0 ; i < key_indexes.size() ; i++){
@@ -70,5 +96,36 @@ int main(){
 		printHex(user_keys[i],32);
 	}
 
-	return 0;
+	ofstream ofs("mi_arbol.dat",ios::binary);
+	ofs << BES_SDM_Tree_1;
+	ofs.close();
+
+	BES_SDM_scheme BES_SDM_Tree_2(3, 256);
+	ifstream ifs("mi_arbol.dat",ios::binary);
+	ifs >> BES_SDM_Tree_2;
+	BES_SDM_Tree_2.print_KeyTree_info();
+
+	key_indexes.clear();
+	user_keys.clear();
+	BES_SDM_Tree_2.get_user_keys(0,key_indexes,user_keys);
+	
+	cout << "el usuario tiene acceso a los labels:" << endl;
+
+	for(int i = 0 ; i < key_indexes.size() ; i++){
+		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
+		printHex(user_keys[i],32);
+	}
+	key_indexes.clear();
+	user_keys.clear();
+	BES_SDM_Tree_2.get_allowed_keys(key_indexes,user_keys);
+
+	cout << "las claves que van a ser utilizadas son:" << endl;
+	for(int i = 0 ; i < key_indexes.size() ; i++){
+		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
+		printHex(user_keys[i],32);
+	}
+
+
+
+    return 0;
 }
