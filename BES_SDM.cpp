@@ -217,43 +217,18 @@ void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std
         { // base case
             if (node_tree[0] == S_node)
             {
-                if (node_tree[get_leftchild_index(iteration)] == S_node && node_tree[get_rightchild_index(iteration)] == O_node)
+                unsigned char root_left_node = get_leftchild_index(iteration);
+                unsigned char root_right_node = get_rightchild_index(iteration);
+                if ((root_left_node == S_node && root_right_node == O_node) || (root_left_node == O_node && root_right_node == S_node) || (root_left_node == D_node && root_right_node == O_node) || (root_left_node == O_node && root_right_node == D_node))
                 {
-                    // find subset for left path
-                    aux_key = new uint8_t[key_length_bytes];
-                    aux_subset = find_subset_and_key(iteration, node_tree, aux_key);
-                    user_keys_id.push_back(aux_subset);
-                    user_keys.push_back(aux_key);
-                }
-                else if (node_tree[get_leftchild_index(iteration)] == O_node && node_tree[get_rightchild_index(iteration)] == S_node)
-                {
-                    // find subset for right path
-                    aux_key = new uint8_t[key_length_bytes];
-                    aux_subset = find_subset_and_key(iteration, node_tree, aux_key);
-                    user_keys_id.push_back(aux_subset);
-                    user_keys.push_back(aux_key);
-                }
-                else if (node_tree[get_leftchild_index(iteration)] == D_node && node_tree[get_rightchild_index(iteration)] == O_node)
-                {
-                    // find subset for delt path
-                    aux_key = new uint8_t[key_length_bytes];
-                    aux_subset = find_subset_and_key(iteration, node_tree, aux_key);
-                    user_keys_id.push_back(aux_subset);
-                    user_keys.push_back(aux_key);
-                }
-                else if (node_tree[get_leftchild_index(iteration)] == O_node && node_tree[get_rightchild_index(iteration)] == D_node)
-                {
-                    // find subset for right path
+                    // find last subset
                     aux_key = new uint8_t[key_length_bytes];
                     aux_subset = find_subset_and_key(iteration, node_tree, aux_key);
                     user_keys_id.push_back(aux_subset);
                     user_keys.push_back(aux_key);
                 }
             }
-
             break;
         }
     }
 }
-
-
