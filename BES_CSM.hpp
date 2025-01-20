@@ -44,6 +44,16 @@ public:
     ~BES_CSM_scheme() = default;
 
     /**
+     * @brief overwrite output stream operator, so we can write the CSM_tree to a file
+     */
+    friend ostream& operator << ( ostream& os, const BES_CSM_scheme& obj);
+
+    /**
+     * @brief overwrite input stream operator, so we can read the CSM_tree to a file
+     */
+    friend istream& operator >> ( istream& is, BES_CSM_scheme& obj);
+
+    /**
      * @brief Deny access for keys to a user.
      * 
      * @param userID The ID of the user to be denied access.

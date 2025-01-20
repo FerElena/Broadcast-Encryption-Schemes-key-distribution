@@ -86,7 +86,7 @@ public:
     int denegate_user(unsigned int userID);
 
     /*!
-     * @brief Gets the key_labels for a specific user according to the SDM scheme.
+     * @brief Gets the key_labels for a specific user according to the SDM scheme (remark on it gets the key_labels, not the direct keys).
      *
      * @param userID The ID of the user.
      * @param user_keys_id Vector to store the user's key subset IDs.

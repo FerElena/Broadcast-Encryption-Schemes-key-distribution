@@ -8,6 +8,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <cstdint>
 #include <cstddef>
@@ -34,6 +35,8 @@ void Fill_With_Random(uint8_t* buffer, std::size_t size);
  * @param size Size of the array.
  */
 void printHex(const uint8_t* array, std::size_t size);
+
+const size_t scheme_name_size = 20;
 
 /**
  *@brief gets the father of a tree node
