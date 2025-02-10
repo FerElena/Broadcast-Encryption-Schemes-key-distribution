@@ -68,7 +68,7 @@ int main(){
 	//check funcionality get keys for a user
 	user_keys_CSM.clear();
 	key_indexes_CSM.clear();
-	CSM_scheme.get_user_keys_CSM(0,key_indexes_CSM,user_keys_CSM);
+	CSM_scheme.get_user_keys(0,key_indexes_CSM,user_keys_CSM);
 	print_color("Keys for user 0 are:",BLUE_CYAN);
 	print_keys_CSM(key_indexes_CSM,user_keys_CSM,256);
 
@@ -89,11 +89,19 @@ int main(){
 	/////////////////////////////////////////SDM SCHEME INFORMAL TESTS////////////////////////////////////////////////
 
 	//testing variables
-	vector <uint8_t*> user_keys_CSM;
-	vector <Key_subset> key_indexes_CSM;
+	vector <uint8_t*> user_keys_SDM;
+	vector <Key_subset> key_indexes_SDM;
 
 	//Creating a new SDM scheme
 	print_color("SDM SCHEME UNITARY TESTING",RED);
+	print_color("creating a SDM scheme Key_tree",BLUE_CYAN);
+	BES_SDM_scheme SDM_scheme(3,256); // 3 is the depth of the tree, 256 is the key length in bits
+	print_color("the content of the Keytree is: ",BLUE_CYAN);
+	SDM_scheme.print_KeyTree_info(); // remember in SDM scheme, the noide keys are labels, not the finally used keys!
+	print_color("Current allowed keys are: ",BLUE_CYAN);
+	SDM_scheme.get_allowed_keys(key_indexes_SDM,user_keys_SDM);
+	print_keys_SDM(key_indexes_SDM,user_keys_SDM,256);
+	
 
 
 

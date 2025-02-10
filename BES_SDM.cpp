@@ -78,8 +78,9 @@ Key_subset BES_SDM_scheme::find_subset_and_key(int subtree_root_node, std::vecto
 ////////////////////////////////////// PUBLIC METHODS ////////////////////////////////////////////////
 
 // Constructor for the BES_SDM_scheme class
-BES_SDM_scheme::BES_SDM_scheme(size_t Tree_Depth, size_t node_key_length)
-    : Keytree(Tree_Depth, node_key_length) {}
+BES_SDM_scheme::BES_SDM_scheme(size_t Tree_Depth, size_t node_key_length): Keytree(Tree_Depth, node_key_length) {
+    Fill_With_Random(all_users_allowed_key,node_key_length/8);
+}
 
 // Method to deny access to a user by their user ID
 int BES_SDM_scheme::denegate_user(unsigned int userID)
@@ -156,6 +157,16 @@ void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std
     uint8_t *aux_key;                                // ptr to allocate memory for keys
     unsigned int key_length_bytes = Key_length / 8;  // length of the current tree keys in bytes
 
+    //Check if no user is denied, if no user is denied, return all_users_allowed_key, else continue with normal execution of the functionn
+    bool all_users_allowed = all_of(this->allowed_users.begin(),this->allowed_users.end(), [](bool v) {return v;});
+    if(all_users_allowed){
+        Key_subset all_users_key= {0,0};
+        user_keys_id.push_back(all_users_key);
+        user_keys.push_back(all_users_allowed_key);
+        return;
+    }
+    
+    //else, normal functioning:
     for (int i = number_of_nodes / 2, j = 0; i < number_of_nodes; i++, j++)
     { // setup the initial vector representing the binary tree, and initialize leaf nodes
         if (allowed_users[j]) // if user is allowed to acces the system, setup his node as operative node

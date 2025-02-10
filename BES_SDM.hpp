@@ -33,32 +33,38 @@ const char S_node = 2; // Semi operative node
 class BES_SDM_scheme : public Keytree
 {
 private:
-    /*!
-     * \brief Finds the path between a leaf and a node.
+    /** 
+     * @brief key for the special case where all users are allowed
      *
-     * \param leaf_node_index The index of the leaf node.
-     * \param root_node_index The index of the root node.
-     * \param path Vector to store the path.
-     * \return 1 if the path is found, -1 if the leaf and root nodes are the same.
+     */
+    uint8_t all_users_allowed_key[32];
+
+    /*!
+     * @brief Finds the path between a leaf and a node.
+     *
+     * @param leaf_node_index The index of the leaf node.
+     * @param root_node_index The index of the root node.
+     * @param path Vector to store the path.
+     * @return 1 if the path is found, -1 if the leaf and root nodes are the same.
      */
     int find_path(unsigned int leaf_node_index, unsigned int root_node_index, vector<unsigned int> &path);
 
     /*!
-     * \brief Generates a triple-sized key using a Deterministic Random Byte Generator (DRBG).
+     * @brief Generates a triple-sized key using a Deterministic Random Byte Generator (DRBG).
      *
-     * \param key_in The input key.
-     * \param key_size The size of the input key.
-     * \param triple_out Buffer to store the triple-sized key output.
+     * @param key_in The input key.
+     * @param key_size The size of the input key.
+     * @param triple_out Buffer to store the triple-sized key output.
      */
     void drbg_triplesize(uint8_t *key_in, size_t key_size, uint8_t *triple_out);
 
     /*!
-     * \brief Finds the subset and key for a given subtree in the node tree.
+     * @brief Finds the subset and key for a given subtree in the node tree.
      *
-     * \param subtree_root_node The index of the subtree root node.
-     * \param node_tree Vector representing the structure of the node tree.
-     * \param key Buffer to store the derived key.
-     * \return An instance of Key_subset containing the high and low nodes of the subset.
+     * @param subtree_root_node The index of the subtree root node.
+     * @param node_tree Vector representing the structure of the node tree.
+     * @param key Buffer to store the derived key.
+     * @return An instance of Key_subset containing the high and low nodes of the subset.
      */
     Key_subset find_subset_and_key(int subtree_root_node, vector<char> node_tree, uint8_t *key);
 
