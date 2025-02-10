@@ -100,7 +100,7 @@ int BES_SDM_scheme::denegate_user(unsigned int userID)
 }
 
 // Method to get the keys for a specific user
-int BES_SDM_scheme::get_user_labels(unsigned int userID, vector<Key_subset> &user_keys_id, vector<uint8_t *> &user_keys)
+int BES_SDM_scheme::get_user_labels(unsigned int userID, vector<Key_subset> &user_labels_id, vector<uint8_t *> &user_labels)
 {
     if (userID >= allowed_users.size())
     {
@@ -140,8 +140,8 @@ int BES_SDM_scheme::get_user_labels(unsigned int userID, vector<Key_subset> &use
                 aux_subset.low_node = get_leftchild_index(path[j]);
             }
             aux_subset.high_node = current_subtree_root;
-            user_keys_id.push_back(aux_subset); // add both high and low index, corresponding to a subset in the SDM scheme
-            user_keys.push_back(ptr_key);       // add the corresponding user key to the key vector
+            user_labels_id.push_back(aux_subset); // add both high and low index, corresponding to a subset in the SDM scheme
+            user_labels.push_back(ptr_key);       // add the corresponding user key to the key vector
         }
         current_subtree_root = get_father_index(current_subtree_root); // iterate to the next subtree, which is the one rooted as the father of current one
         path.clear();                                                  // reset the path to calculate the new path
