@@ -100,7 +100,7 @@ int BES_SDM_scheme::denegate_user(unsigned int userID)
 }
 
 // Method to get the keys for a specific user
-int BES_SDM_scheme::get_user_keys(unsigned int userID, vector<Key_subset> &user_keys_id, vector<uint8_t *> &user_keys)
+int BES_SDM_scheme::get_user_labels(unsigned int userID, vector<Key_subset> &user_keys_id, vector<uint8_t *> &user_keys)
 {
     if (userID >= allowed_users.size())
     {
@@ -165,7 +165,7 @@ void BES_SDM_scheme::get_allowed_keys(std::vector<Key_subset> &user_keys_id, std
         user_keys.push_back(all_users_allowed_key);
         return;
     }
-    
+
     //else, normal functioning:
     for (int i = number_of_nodes / 2, j = 0; i < number_of_nodes; i++, j++)
     { // setup the initial vector representing the binary tree, and initialize leaf nodes

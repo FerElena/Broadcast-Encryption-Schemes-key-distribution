@@ -105,12 +105,12 @@ public:
      * @brief Gets the key_labels for a specific user according to the SDM scheme (remark on it gets the key_labels, not the direct keys).
      *
      * @param userID The ID of the user.
-     * @param user_keys_id Vector to store the user's key subset IDs.
-     * @param user_keys Vector to store the user's keys.
-     * @return 1 if the user keys are successfully retrieved, -1 if the user ID is invalid.
+     * @param user_keys_id Vector to store the user's labels subset IDs.
+     * @param user_keys Vector to store the user's labels.
+     * @return 1 if the user labels are successfully retrieved, -1 if the user ID is invalid.
      * @throws invalid_argument if the user ID is invalid.
      */
-    int get_user_keys(unsigned int userID, vector<Key_subset> &user_keys_id, vector<uint8_t *> &user_keys);
+    int get_user_labels(unsigned int userID, vector<Key_subset> &user_keys_id, vector<uint8_t *> &user_keys);
 
     /*!
      * @brief Gets the allowed keys for operative users in the system.

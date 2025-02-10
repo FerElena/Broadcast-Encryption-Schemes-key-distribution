@@ -1,6 +1,8 @@
 // compile the code with g++ and the -maes option to tell the compiler to use the INTEL and AMD AES instructions
 // g++ BES_SDM.cpp BES_CSM.cpp DRBG_AES.cpp testing_main.cpp Key_Tree.cpp -maes
 
+#include <cstdio>// for remove function
+
 #include "Key_Tree.hpp"
 #include "BES_CSM.hpp"
 #include "BES_SDM.hpp"
@@ -34,6 +36,14 @@ void print_keys_SDM(vector <Key_subset> key_index ,vector <uint8_t*>keys_vector,
 		printHex(keys_vector[i],key_size/8);
 	}
 }
+
+void print_labels_SDM(vector <Key_subset> key_index ,vector <uint8_t*>keys_vector,size_t key_size){
+	for(int i = 0 ; i < keys_vector.size() ; i++){
+		cout << "label index high: " << key_index[i].high_node <<" ,label index low: " <<key_index[i].low_node <<  " LABEL:";
+		printHex(keys_vector[i],key_size/8);
+	}
+}
+
 
 int main(){
 	//testing variables
@@ -73,14 +83,14 @@ int main(){
 	print_keys_CSM(key_indexes_CSM,user_keys_CSM,256);
 
 	//check functionality store and load a CSM scheme
-	ofstream ofs("CSM_scheme.dat",ios::binary);
-	ofs << CSM_scheme;
-	ofs.close();
+	ofstream ofs_CSM("CSM_scheme.dat",ios::binary);
+	ofs_CSM << CSM_scheme;
+	ofs_CSM.close();
 
 	BES_CSM_scheme LOAD_CSM_scheme(3,256);
-	ifstream ifs("CSM_scheme.dat",ios::binary);
-	ifs >> LOAD_CSM_scheme;
-	ofs.close();
+	ifstream ifs_CSM("CSM_scheme.dat",ios::binary);
+	ifs_CSM >> LOAD_CSM_scheme;
+	ifs_CSM.close();
 	print_color("CSM KeyTree after store and load in different object is: ",BLUE_CYAN);
 	LOAD_CSM_scheme.print_KeyTree_info();
 	print_color("END OF CSM SCHEME TESTING ",GREEN);
@@ -100,67 +110,42 @@ int main(){
 	SDM_scheme.print_KeyTree_info(); // remember in SDM scheme, the noide keys are labels, not the finally used keys!
 	print_color("Current allowed keys are: ",BLUE_CYAN);
 	SDM_scheme.get_allowed_keys(key_indexes_SDM,user_keys_SDM);
+	print_keys_SDM(key_indexes_SDM,user_keys_SDM,256); //only all users allowed special key should be displayed
+
+	//check functionality deny users
+	user_keys_SDM.clear();
+	key_indexes_SDM.clear();
+	print_color("deniying some users to check deny funcionality:",BLUE_CYAN);
+	SDM_scheme.denegate_user(1); // deny user with id 1
+	SDM_scheme.denegate_user(2); // deny user with id 2
+	SDM_scheme.denegate_user(7); // deny user with id 7
+	SDM_scheme.print_KeyTree_info();
+	SDM_scheme.get_allowed_keys(key_indexes_SDM,user_keys_SDM);
 	print_keys_SDM(key_indexes_SDM,user_keys_SDM,256);
-	
 
+	//check funcionality get labels for a user
+	user_keys_SDM.clear();
+	key_indexes_SDM.clear();
+	SDM_scheme.get_user_labels(0,key_indexes_SDM,user_keys_SDM);
+	print_color("labels for user 0 are:",BLUE_CYAN);
+	print_keys_SDM(key_indexes_SDM,user_keys_SDM,256);
 
+	//check functionality store and load a SDM scheme
+	ofstream ofs_SDM("SDM_scheme.dat",ios::binary);
+	ofs_SDM << SDM_scheme;
+	ofs_SDM.close();
 
-	/*vector <uint8_t*> user_keys_CSM;
-	vector <key_subset> key_indexes;
+	BES_SDM_scheme LOAD_SDM_scheme(3,256);
+	ifstream ifs_SDM("SDM_scheme.dat",ios::binary);
+	ifs_SDM >> LOAD_SDM_scheme;
+	ifs_SDM.close();
+	print_color("SDM KeyTree after store and load in different object is: ",BLUE_CYAN);
+	LOAD_SDM_scheme.print_KeyTree_info();
+	print_color("END OF SDM SCHEME TESTING ",GREEN);
+	cout << endl << endl;
 
-	BES_SDM_scheme BES_SDM_Tree_1(3, 256);
-    BES_SDM_Tree_1.denegate_user(1);
-
-    BES_SDM_Tree_1.print_KeyTree_info();
-
-	BES_SDM_Tree_1.get_user_keys_CSM(0,key_indexes,user_keys_CSM);
-	
-	cout << "el usuario tiene acceso a los labels:" << endl;
-
-	for(int i = 0 ; i < key_indexes.size() ; i++){
-		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
-		printHex(user_keys_CSM[i],32);
-	}
-	key_indexes.clear();
-	user_keys_CSM.clear();
-	BES_SDM_Tree_1.get_allowed_keys(key_indexes,user_keys_CSM);
-
-	cout << "las claves que van a ser utilizadas son:" << endl;
-	for(int i = 0 ; i < key_indexes.size() ; i++){
-		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
-		printHex(user_keys_CSM[i],32);
-	}
-
-	ofstream ofs("mi_arbol.dat",ios::binary);
-	ofs << BES_SDM_Tree_1;
-	ofs.close();
-
-	BES_SDM_scheme BES_SDM_Tree_2(3, 256);
-	ifstream ifs("mi_arbol.dat",ios::binary);
-	ifs >> BES_SDM_Tree_2;
-	BES_SDM_Tree_2.print_KeyTree_info();
-
-	key_indexes.clear();
-	user_keys_CSM.clear();
-	BES_SDM_Tree_2.get_user_keys_CSM(0,key_indexes,user_keys_CSM);
-	
-	cout << "el usuario tiene acceso a los labels:" << endl;
-
-	for(int i = 0 ; i < key_indexes.size() ; i++){
-		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
-		printHex(user_keys_CSM[i],32);
-	}
-	key_indexes.clear();
-	user_keys_CSM.clear();
-	BES_SDM_Tree_2.get_allowed_keys(key_indexes,user_keys_CSM);
-
-	cout << "las claves que van a ser utilizadas son:" << endl;
-	for(int i = 0 ; i < key_indexes.size() ; i++){
-		cout << "index i = " << key_indexes[i].high_node <<" index j = " << key_indexes[i].low_node << "  key : ";
-		printHex(user_keys_CSM[i],32);
-	}
-
-	*/
-
+	remove("mi_arbol.dat");
+	remove("CSM_scheme.dat");
+	remove("SDM_scheme.dat");
     return 0;
 }

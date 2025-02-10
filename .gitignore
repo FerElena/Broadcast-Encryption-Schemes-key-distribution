@@ -1,2 +1,10 @@
-#ignora todos los ejecutables resultado de una compilación:
+#ignores all executables resulting from a compilation:
 *.out
+
+#vscode
+.vscode/
+
+#dat files
+CSM_scheme.dat
+SDM_scheme.dat
+mi_arbol.dat
